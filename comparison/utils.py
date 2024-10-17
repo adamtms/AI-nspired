@@ -12,17 +12,18 @@ from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image,preprocess_image
 from pytorch_grad_cam.utils.model_targets import RawScoresOutputTarget
 
-INPUT_SHAPE = (256,256)
 
 def load_img(path,resize_shape=None) -> np.ndarray:
-    img = cv2.imread(path)
+    img = np.array(Image.open(path).convert("RGB"))[...,:3]
     if resize_shape == None:
         return np.float32(img)/255
     return np.float32(cv2.resize(img,resize_shape))/255
 
 def load_image_into_resnet_tensor(path,device="cpu"):
     image_transform_pipeline = transforms.Compose([
-        transforms.ToTensor()
+        transforms.Resize((224,224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
     return image_transform_pipeline(
         Image.open(path).convert("RGB")
@@ -46,6 +47,12 @@ class SimilarityTarget(RawScoresOutputTarget):
     def __call__(self, model_output):
         return torch.nn.functional.cosine_similarity(model_output,self.features,dim=0)
     
+class DissimilarityTarget(RawScoresOutputTarget):
+    def __init__(self,features) -> None:
+        super().__init__()
+        self.features = features
+    def __call__(self, model_output):
+        return 1-torch.nn.functional.cosine_similarity(model_output,self.features,dim=0)
     
 def make_comparison_plot_similarity(inspiration_path, final_image_path,model:ResnetFeatureExtractor,device):
     inspiration_tensor = load_image_into_resnet_tensor(inspiration_path,device)
@@ -59,8 +66,8 @@ def make_comparison_plot_similarity(inspiration_path, final_image_path,model:Res
     target_layers = [
         #*model.model.layer1,
         #*model.model.layer2,
-        #*model.model.layer3,
-        model.model.layer4[-1]
+        *model.model.layer3,
+        *model.model.layer4
         ]
     cam = GradCAM(model=model, target_layers=target_layers)
 
@@ -70,6 +77,7 @@ def make_comparison_plot_similarity(inspiration_path, final_image_path,model:Res
     inspiration = load_img(inspiration_path)
     final_image = load_img(final_image_path)
 
+    
     ax = plt.figure(figsize=(20,20))
     plt.subplot(3,2,1)
     plt.imshow(inspiration)
@@ -92,5 +100,5 @@ def make_comparison_plot_similarity(inspiration_path, final_image_path,model:Res
     plt.title("Final Image Heatmap\n(What makes final similar to inspiration)")
     
     plt.suptitle(f"Similarity (cos): {cosine_similarity}")
-
+    plt.tight_layout()
     torch.cuda.empty_cache()
