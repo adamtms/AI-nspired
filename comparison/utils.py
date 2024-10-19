@@ -8,7 +8,7 @@ from PIL import Image
 
 import torchvision.transforms as transforms
 
-from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam import GradCAM,GradCAMPlusPlus
 from pytorch_grad_cam.utils.image import show_cam_on_image,preprocess_image
 from pytorch_grad_cam.utils.model_targets import RawScoresOutputTarget
 
@@ -64,13 +64,10 @@ def make_comparison_plot_similarity(inspiration_path, final_image_path,model:Res
     cosine_similarity = np.float32(torch.nn.functional.cosine_similarity(features_inspiration,features_final,dim=0).cpu().detach().numpy())
 
     target_layers = [
-        #*model.model.layer1,
-        #*model.model.layer2,
-        *model.model.layer3,
-        *model.model.layer4
+        model.model.layer4[-1]
         ]
     cam = GradCAM(model=model, target_layers=target_layers)
-
+    
     grayscale_cam_final = cam(input_tensor=final_image_tensor, targets=[SimilarityTarget(features_inspiration)])
     grayscale_cam_inspiration = cam(input_tensor=inspiration_tensor, targets=[SimilarityTarget(features_final)])
 
@@ -78,7 +75,7 @@ def make_comparison_plot_similarity(inspiration_path, final_image_path,model:Res
     final_image = load_img(final_image_path)
 
     
-    ax = plt.figure(figsize=(20,20))
+    ax = plt.figure(figsize=(15,15))
     plt.subplot(3,2,1)
     plt.imshow(inspiration)
     plt.title("Inspiration")
