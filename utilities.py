@@ -26,12 +26,12 @@ def get_groups():
 
 def get_participants():
     participants = pd.read_excel('./data/Participants.xlsx', header=0, skiprows=[0], index_col=0)
-    participants.columns = ["Unnamed: 1", "School_group", "ID", "GroupID", "Name", "WEB_inspirations", "AI_inspirations", "Comment"]
+    participants.columns = ["Unnamed: 1", "School_group", "ID", "GroupID", "Name", "WEB_inspirations", "AI_inspirations", "Matrices", "Comment"]
     participants["GroupID"] = participants["ID"].apply(lambda x: str(x) if str(x).isdigit() else str(x).rstrip("ABCD"))
     participants["WEB_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", "web"], f'{row["ID"]}'), axis=1)
     participants["AI_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", "ai"], f'{row["ID"]}'), axis=1)
     participants["Final_submisions"] = participants.apply(lambda row: list_files_with_prefix(["data", "final_submissions", f'{row["GroupID"]}'], ''), axis=1)
-    return participants[["Name", "ID", "GroupID", "WEB_inspirations", "AI_inspirations", "Final_submisions", "Comment"]]
+    return participants[["Name", "ID", "GroupID", "WEB_inspirations", "AI_inspirations", "Final_submisions", "Matrices", "Comment"]]
 
 def list_files_with_prefix(directory, prefix):
     try:
