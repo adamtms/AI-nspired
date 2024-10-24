@@ -4,7 +4,7 @@ import secrets
 
 from model import calculate_cosine,get_model
 
-DATA_DIR = "/home/j-millet/Desktop/AI-nspired/data/clean"
+DATA_DIR = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../data/clean"))
 
 app = flask.Flask(__name__)
 
