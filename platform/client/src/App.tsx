@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import './App.css'
-import ImageContainer from "./lib/ImageContainer";
-import FinalImageContainer from "./lib/FinalImageContainer";
+import ImageContainer from "./components/ImageContainer";
+import FinalImageContainer from "./components/FinalImageContainer";
 
 async function fetchGroups() {
   let groups_available: string[] = [];
-  await fetch("/api/get-groups")
+  await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/get-groups`)
           .then((res) => res.json())
           .then((data) => {
               groups_available = data.groups;
@@ -40,7 +40,7 @@ function App() {
         <h1>Group {selectedGroup}</h1>
       </div>
       <div id="content">
-        <FinalImageContainer selectedGroup={selectedGroup} source="final"/>
+        <FinalImageContainer group={selectedGroup} source="final"/>
         <ImageContainer selectedGroup={selectedGroup} source="web" />
         <ImageContainer selectedGroup={selectedGroup} source="ai" />
       </div>

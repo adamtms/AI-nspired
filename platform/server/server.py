@@ -1,12 +1,15 @@
 import flask
 import os
 import secrets
+from flask_cors import CORS, cross_origin
 
 from model import calculate_cosine,get_model
 
 DATA_DIR = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../data/clean"))
 
 app = flask.Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.secret_key = "1234567890"
 
@@ -15,6 +18,7 @@ MODEL = None
 sim_cache = {}
 
 @app.route("/")
+@cross_origin()
 def base():
     return flask.send_from_directory("../client/dist", "index.html")
 
