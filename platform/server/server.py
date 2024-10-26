@@ -35,8 +35,8 @@ def get_available_groups():
 def get_group_images():
     data = flask.request.json
     if "group" not in data:
-        return flask.jsonify({"error": "No filename provided"})
-    
+        return flask.jsonify({"error": "No group provided"})
+
     gid = str(data["group"])
     ret_json = {x:[] for x in ["web","ai","final"]}
     for source in ["web","ai","final"]:

@@ -1,0 +1,61 @@
+#popup{
+    position:fixed;
+    top: 10vh;
+    left: 10vw;
+    width: 80vw;
+    height: 80vh;
+    background-color: rgb(10, 10, 10);
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+#similar-images{
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.split-horizontal{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 90%;
+    overflow: hidden;
+}
+
+.image-holder{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.image-holder img{
+    max-width: 100%;
+    max-height: 100%;
+    border: 1px solid white;
+    border-radius: 20px;
+}
+
+.scroll-vertical{
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding:10px;
+    max-width: 40vw;
+    align-items: center;
+}
+
+.similarity-image{
+    width: 80%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.similarity-image img{
+    max-height: 40vh;
+    max-width: 90%;
+}

@@ -1,0 +1,29 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+#header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin: 1rem;
+  padding-left:1rem;
+  width: 100vw;
+}
+#content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  max-width: 90vw;
+}
