@@ -13,13 +13,18 @@
   overflow-x: hidden;
 }
 #header {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 5fr 1fr;
   margin: 1rem;
   padding-left:1rem;
   width: 100vw;
+  text-align: center;
+  align-items: center;
+  justify-items: center;
 }
+
+
+
 #content {
   display: flex;
   flex-direction: column;

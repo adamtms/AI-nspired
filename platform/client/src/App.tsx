@@ -40,8 +40,11 @@ function App() {
         <h1>Group {selectedGroup}</h1>
       </div>
       <div id="content">
+        <h2>Final Images</h2>
         <FinalImageContainer group={selectedGroup} source="final"/>
+        <h2>Web Images</h2>
         <ImageContainer selectedGroup={selectedGroup} source="web" />
+        <h2>AI Images</h2>
         <ImageContainer selectedGroup={selectedGroup} source="ai" />
       </div>
     </>

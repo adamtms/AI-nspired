@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { get_images } from "../lib/data";
 import ComparisonPopup from "./ComparisonPopup";
+import "./FinalImageContainer.css";
 
 interface FinalImageContainerProps {
     source: string;
