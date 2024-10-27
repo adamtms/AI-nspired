@@ -20,7 +20,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     height: 90%;
-    overflow: hidden;
+    width: 100%;
 }
 
 .image-holder{
@@ -28,6 +28,7 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
+    max-height: 60vh;
 }
 
 .image-holder img{

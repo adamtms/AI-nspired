@@ -2,10 +2,15 @@ import torch
 from torchvision import models
 import torchvision.transforms as transforms
 
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import RawScoresOutputTarget
+
 import cv2
 from PIL import Image
 
 import numpy as np
+
+from functools import lru_cache
 
 TRANSFORMS_PIPELINE = transforms.Compose([
         transforms.Resize(224),
@@ -26,6 +31,12 @@ def load_image_into_resnet_tensor(path,image_transform_pipeline=TRANSFORMS_PIPEL
         Image.open(path).convert("RGB")
     ).unsqueeze(0).to(device)
 
+class SimilarityTarget(RawScoresOutputTarget):
+    def __init__(self,features) -> None:
+        super().__init__()
+        self.features = features
+    def __call__(self, model_output):
+        return torch.nn.functional.cosine_similarity(model_output,self.features,dim=0)
 
 #https://jacobgil.github.io/pytorch-gradcam-book/Pixel%20Attribution%20for%20embeddings.html
 class ResnetFeatureExtractor(torch.nn.Module):
@@ -40,6 +51,7 @@ class ResnetFeatureExtractor(torch.nn.Module):
 def get_model():
     return ResnetFeatureExtractor().to(DEVICE)
 
+@lru_cache(maxsize=128)
 def calculate_cosine(path1,path2,model):
     img1 = load_image_into_resnet_tensor(path1,device=DEVICE)
     img2 = load_image_into_resnet_tensor(path2,device=DEVICE)
@@ -49,5 +61,25 @@ def calculate_cosine(path1,path2,model):
     del img1,img2,features1,features2
     return sim
 
-
-
+def make_heatmap(path1:str,path2:str,save_folder:str,model:ResnetFeatureExtractor):
+    # Makes heatmap of what makes image1 similar to image2
+    img1 = load_image_into_resnet_tensor(path1,device=DEVICE)
+    img2 = load_image_into_resnet_tensor(path2,device=DEVICE)
+    features2 = model(img2)[0,:]
+    
+    target_layers = [
+        model.model.layer4[-1]
+        ]
+    cam = GradCAM(model=model, target_layers=target_layers)
+    grayscale_cam= cam(input_tensor=img1, targets=[SimilarityTarget(features2)])
+    
+    img1_pixels = load_img(path1)
+    cam_resized = cv2.resize(grayscale_cam[0],img1_pixels.shape[:2][::-1])
+    heatmap_mask = np.dstack([cam_resized, cam_resized, cam_resized])
+    
+    heatmap_mask = (heatmap_mask - np.min(heatmap_mask))/(np.max(heatmap_mask)-np.min(heatmap_mask))
+    
+    img_masked = (img1_pixels*heatmap_mask*255).astype(np.uint8)
+    
+    cv2.imwrite(f'{save_folder}/{path1.replace("/","_")}_{path2.replace("/","_")}_heatmap.jpg',cv2.cvtColor(img_masked,cv2.COLOR_RGB2BGR))
+    return f'{save_folder}/{path1.replace("/","_")}_{path2.replace("/","_")}_heatmap.jpg'

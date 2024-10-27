@@ -17,6 +17,7 @@ export default function ComparisonPopup({
 }:  ComparisonPopupProps,) {
     const [similarities, setSimilarities] = useState<{ image: string; similarity: number }[]>([]);
     const [images_to_compare, setImagesToCompare] = useState<string[]>([]);
+    const [heatmaps, setHeatmaps] = useState<{ image: string; heatmap: string }[]>([]);
 
     async function load_similarities() {
         setSimilarities(() => []);
@@ -24,7 +25,7 @@ export default function ComparisonPopup({
           await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/get-similarity`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ im1: selectedImage, im2: image }),
+            body: JSON.stringify({ image1: selectedImage, image2: image }),
           })
             .then((response) => response.json())
             .then((data) => {
@@ -32,6 +33,22 @@ export default function ComparisonPopup({
             });
         }
       }
+
+    async function load_heatmaps(top_n: number) {
+      setHeatmaps(() => []);
+      for (const sim of similarities.sort((a,b) => b.similarity - a.similarity).slice(0, top_n)) {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/get-heatmap`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image1: sim.image, image2: selectedImage }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            setHeatmaps((oldState) => [...oldState, { image: sim.image, heatmap: data.heatmap }]);
+          });
+      }
+        
+    }
 
     const closePopup = () => {
       set_popup_open(false);
@@ -41,13 +58,21 @@ export default function ComparisonPopup({
         load_images_to_compare(selectedGroup).then((images) => {
             setImagesToCompare(() => images);
         });
-    }, [selectedGroup])
+    }, [selectedGroup]);
 
     useEffect(() => {
         if(images_to_compare && selectedImage !== "") {
+            setHeatmaps(() => []);//clear heatmaps when new image is selected
             load_similarities();
         }
-    }, [images_to_compare, selectedImage]);
+    }, [selectedImage]);
+
+    useEffect(() => {
+      if (similarities.length === images_to_compare.length) //load only when all similarities are computed
+      {
+        load_heatmaps(5);
+      }
+    }, [similarities]);
 
     if (!popup_open) {
         return null;
@@ -68,25 +93,32 @@ export default function ComparisonPopup({
               </div>
               <div id="similar-images">
                 <h2>Top 5 most similar images</h2>
-                <div className="scroll-vertical">
                   <div className="scroll-vertical">
                     {similarities
                       .sort((a, b) => b.similarity - a.similarity)
                       .slice(0, 5)
-                      .map((similarity, index) => {
+                      .map((similarity) => {
                         return (
-                          <div key={index} className="similarity-image">
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_URL}/images/` + similarity.image}
-                              alt="similar"
-                            />
-                            <p>Similarity: {similarity.similarity}</p>
+                          <div className="split-horizontal">
+                            <div className="similarity-image">
+                              <img
+                                src={`${process.env.REACT_APP_BACKEND_URL}/images/` + similarity.image}
+                                alt="similar"
+                              />
+                              <p>Similarity: {Math.round(similarity.similarity*1000)/1000}</p>
+                            </div>
+                            <div className="similarity-image">
+                              <img
+                                src={`${process.env.REACT_APP_BACKEND_URL}/images/` + heatmaps.find((heatmap) => heatmap.image === similarity.image)?.heatmap}
+                                alt="Loading..."
+                              />
+                              <p>Heatmap</p>
+                            </div>
                           </div>
                         );
                       })}
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </>

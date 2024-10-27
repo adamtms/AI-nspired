@@ -3,9 +3,10 @@ import os
 import secrets
 from flask_cors import CORS, cross_origin
 
-from model import calculate_cosine,get_model
+from model import calculate_cosine,make_heatmap,get_model
 
 DATA_DIR = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../data/clean"))
+CACHE_DIR = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../data/clean/cache"))
 
 app = flask.Flask(__name__)
 cors = CORS(app)
@@ -32,7 +33,7 @@ def images(path):
 
 @app.route("/api/get-groups",methods=["GET"])
 def get_available_groups():
-    groups = os.listdir(DATA_DIR)
+    groups = [x for x in os.listdir(DATA_DIR) if x != "cache"]
     return flask.jsonify({"groups":groups})
 
 @app.route("/api/get-group-images",methods=["POST"])
@@ -51,18 +52,33 @@ def get_group_images():
 @app.route("/api/get-similarity",methods=["POST"])
 def get_sim():
     data = flask.request.json
-    if "im1" not in data or "im2" not in data:
+    if "image1" not in data or "image2" not in data:
         return flask.jsonify({"error": "No filename provided"})
-    k1,k2 = f"{data['im1']}--{data['im2']}",f"{data['im2']}--{data['im1']}"
-    if k1 in sim_cache:
-        return flask.jsonify({"similarity":sim_cache[k1]})
-    if k2 in sim_cache:
-        return flask.jsonify({"similarity":sim_cache[k2]})
     
-    sim = calculate_cosine(os.path.join(DATA_DIR,data["im1"]),os.path.join(DATA_DIR,data["im2"]),MODEL)
-    sim_cache[k1] = sim
-    sim_cache[k2] = sim
+    sim = calculate_cosine(os.path.join(DATA_DIR,data["image1"]),os.path.join(DATA_DIR,data["image2"]),MODEL)
     return flask.jsonify({"similarity":sim})
+
+
+@app.route("/api/get-heatmap",methods=["POST"])
+def get_heatmap():
+    data = flask.request.json
+    if "image1" not in data or "image2" not in data:
+        return flask.jsonify({"error": "No filename provided"})
+    
+    save_folder = os.path.join(CACHE_DIR,"heatmaps")
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+        
+    path1 = os.path.join(DATA_DIR,data["image1"])
+    path2 = os.path.join(DATA_DIR,data["image2"])
+    
+    filename = f'{save_folder}/{path1.replace("/","_")}_{path2.replace("/","_")}_heatmap.jpg'
+    
+    if not os.path.exists(filename):
+        make_heatmap(path1,path2,save_folder,MODEL)
+    
+    return flask.jsonify({"heatmap":f"cache/heatmaps/{path1.replace('/','_')}_{path2.replace('/','_')}_heatmap.jpg"})
+    
 
 if __name__ == "__main__":
     MODEL = get_model()
