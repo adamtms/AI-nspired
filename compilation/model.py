@@ -61,7 +61,7 @@ def calculate_cosine(path1,path2,model):
     del img1,img2,features1,features2
     return sim
 
-def make_heatmap(path1:str,path2:str,save_folder:str,model:ResnetFeatureExtractor):
+def make_heatmap(path1:str,path2:str,save_path:str,model:ResnetFeatureExtractor):
     # Makes heatmap of what makes image1 similar to image2
     img1 = load_image_into_resnet_tensor(path1,device=DEVICE)
     img2 = load_image_into_resnet_tensor(path2,device=DEVICE)
@@ -81,5 +81,5 @@ def make_heatmap(path1:str,path2:str,save_folder:str,model:ResnetFeatureExtracto
     
     img_masked = (img1_pixels*heatmap_mask*255).astype(np.uint8)
     
-    cv2.imwrite(f'{save_folder}/{path1.replace("/","_")}_{path2.replace("/","_")}_heatmap.jpg',cv2.cvtColor(img_masked,cv2.COLOR_RGB2BGR))
-    return f'{save_folder}/{path1.replace("/","_")}_{path2.replace("/","_")}_heatmap.jpg'
+    cv2.imwrite(save_path,cv2.cvtColor(img_masked,cv2.COLOR_RGB2BGR))
+    return save_path
