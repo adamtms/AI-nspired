@@ -2,7 +2,7 @@ import torch
 from torchvision import models
 import torchvision.transforms as transforms
 
-from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam import GradCAM, GradCAMPlusPlus
 from pytorch_grad_cam.utils.model_targets import RawScoresOutputTarget
 
 import cv2
@@ -59,7 +59,7 @@ def calculate_cosine(path1,path2,model):
     features2 = model(img2)
     sim = torch.nn.functional.cosine_similarity(features1,features2,dim=1).cpu().item()
     del img1,img2,features1,features2
-    return sim
+    return (sim + 1)/2
 
 def make_heatmap(path1:str,path2:str,save_path:str,model:ResnetFeatureExtractor):
     # Makes heatmap of what makes image1 similar to image2
@@ -77,7 +77,7 @@ def make_heatmap(path1:str,path2:str,save_path:str,model:ResnetFeatureExtractor)
     cam_resized = cv2.resize(grayscale_cam[0],img1_pixels.shape[:2][::-1])
     heatmap_mask = np.dstack([cam_resized, cam_resized, cam_resized])
     
-    heatmap_mask = (heatmap_mask - np.min(heatmap_mask))/(np.max(heatmap_mask)-np.min(heatmap_mask))
+    heatmap_mask = ((heatmap_mask - np.min(heatmap_mask))/(np.max(heatmap_mask)-np.min(heatmap_mask)))**2
     
     img_masked = (img1_pixels*heatmap_mask*255).astype(np.uint8)
     
