@@ -200,8 +200,6 @@ groupes = list(range(8, 26)) + [27]
 per_group_tab, all_group_tab = st.tabs(["Per Group", "All Groups"])
 
 with per_group_tab:
-    st.pyplot(show_simmilarity(groupes[current_index]))
-
     back_button, next_button = st.columns(2)
 
     with back_button:
@@ -210,7 +208,6 @@ with per_group_tab:
                 st.session_state["index"] = current_index - 1
             else:
                 st.session_state["index"] = len(groupes) - 1
-            st.rerun()
 
     with next_button:
         if st.button("Next"):
@@ -218,7 +215,9 @@ with per_group_tab:
                 st.session_state["index"] = current_index + 1
             else:
                 st.session_state["index"] = 0
-            st.rerun()
+
+    st.pyplot(show_simmilarity(groupes[current_index]))
+    
 
 with all_group_tab:
     st.pyplot(compare_all_groups())
