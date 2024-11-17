@@ -7,6 +7,9 @@ import numpy as np
 import streamlit as st
 import os
 import PIL
+import sys
+
+APP_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))#get dirname of ./app.py
 
 def imshow_on_axis(img, ax, title):
     img = img.astype(np.uint8)
@@ -20,11 +23,11 @@ from typing import Literal
 def load_image(path: str, type: Literal["ai", "final_submission", "web"]) -> np.ndarray:
     if type == "final_submission":
         group, file_name = path.split("_")
-        path = os.path.join(os.getcwd(), "src", "static", "final_submissions", group, file_name)
+        path = os.path.join(APP_PATH, "src", "static", "final_submissions", group, file_name)
     elif type == "web":
-        path = os.path.join(os.getcwd(), "src", "static", "web", path)
+        path = os.path.join(APP_PATH, "src", "static", "web", path)
     elif type == "ai":
-        path = os.path.join(os.getcwd(), "src", "static", "ai", path)
+        path = os.path.join(APP_PATH, "src", "static", "ai", path)
     img = cv2.imread(path)
     return img
 

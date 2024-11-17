@@ -5,9 +5,11 @@ import streamlit as st
 import pandas as pd
 import sys
 
+APP_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))#get dirname of ./app.py
+
 def read_csv(path):
     path = os.path.join(
-        os.path.dirname(os.path.abspath(sys.argv[0])),#get dirname of ./app.py
+        APP_PATH,
         "src", "static", "csv", path)
     try:
         df = pd.read_csv(path)
@@ -36,9 +38,9 @@ def load_images(number):
     final_images = []
     final_srcs = []
 
-    final_path = f"src/static/final_submissions/{number}/"
-    web_path = "src/static/web/"
-    ai_path = "src/static/ai/"
+    final_path = os.path.join(APP_PATH,f"src/static/final_submissions/{number}/")
+    web_path = os.path.join(APP_PATH,"src/static/web/")
+    ai_path = os.path.join(APP_PATH,"src/static/ai/")
 
     if not os.path.exists(final_path):
         print(f"The final submissions path '{final_path}' does not exist.")
