@@ -30,10 +30,12 @@ def load_image(path: str, type: Literal["ai", "final_submission", "web"]) -> np.
 
 def image_similarity(img_index):
     # Define the missing variables
-    
     similarities = st.session_state.get("similarities")
     groups = similarities.groupby("Final_Submission")
-    group_key = list(groups.groups.keys())[img_index]
+    group_key = sorted(
+        list(groups.groups.keys()),
+        key=lambda img: [int(img.split("_")[0]), int(img.split("_")[1].split(".")[0])] #sort by group idx and image num
+        )[img_index]
     image_similarities = groups.get_group(group_key)
     final_image_src = image_similarities["Final_Submission"].values[0]
     final_image = load_image(final_image_src, "final_submission")

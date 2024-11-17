@@ -3,9 +3,12 @@ import os
 import re
 import streamlit as st
 import pandas as pd
+import sys
 
 def read_csv(path):
-    path = os.path.join(os.getcwd(), "src", "static", "csv", path)
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(sys.argv[0])),#get dirname of ./app.py
+        "src", "static", "csv", path)
     try:
         df = pd.read_csv(path)
         return df
