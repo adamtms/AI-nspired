@@ -157,4 +157,13 @@ web_df.loc[:, 'Source'] = 'Web'
 ai_df.loc[:, 'Source'] = 'AI'
     
 combined_df = pd.concat([web_df, ai_df])
+
+all_final_src = []
+for group in range(1 , 26):
+    _, _, _, final_src, _, _ = load_images(group)
+    all_final_src.extend(final_src)
+all_final_src.extend(load_images(27)[3])
+
+combined_df = combined_df[combined_df['Final_Submission'].isin(all_final_src)]
+    
 combined_df.to_csv("csv/all_similarities_with_srcs.csv", index=False)
