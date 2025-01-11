@@ -33,14 +33,19 @@ class Resnet(ComparisonModule):
                 transforms.ToTensor(),
                 transforms.Normalize(
                     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-                ),
+                )
             ]
         )
+    
+    def __np_to_tensor(self, x: np.ndarray) -> torch.Tensor:
+        return self.transforms_pipeline(x).unsqueeze(0).to(self.device)
 
     def calculate_similarity(self, x: np.ndarray, y: np.ndarray) -> float:
-        features_1, features_2 = self.model(x), self.model(y)
+        x_t = self.__np_to_tensor(x)
+        y_t = self.__np_to_tensor(y)
+        features_1, features_2 = self.model(x_t), self.model(y_t)
         sim = torch.nn.functional.cosine_similarity(features_1, features_2)
-        del features_1, features_2
+        del features_1, features_2, x_t, y_t
         return (sim.item() + 1) / 2
 
 
