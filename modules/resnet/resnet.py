@@ -18,7 +18,7 @@ class ResnetFeatureExtractor(torch.nn.Module):
         return self.feature_extractor(x)[:, :, 0, 0]
 
 
-class Resnet(ComparisonModule):
+class ResNet(ComparisonModule):
     def __init__(self, use_cuda=True):
         super().__init__("ResNet")
 
@@ -49,4 +49,4 @@ class Resnet(ComparisonModule):
         return (sim.item() + 1) / 2
 
 
-__all__ = ["Resnet"]
+__all__ = ["ResNet"]
