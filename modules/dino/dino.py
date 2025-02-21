@@ -237,7 +237,7 @@ class DinoV2():
 
             return attention_mask, photo_with_attention
 
-    def draw_lines(self, image1, image2, origin, distance_threshold=0.2, max_lines=10, n_neighbors=1):
+    def draw_lines(self, image1, image2, origin, distance_threshold=0.2, max_lines=10, n_neighbors=1, save=False):
         # Read images in RGB
         img1 = cv2.cvtColor(cv2.imread(image1, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
         img2 = cv2.cvtColor(cv2.imread(image2, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
@@ -275,12 +275,12 @@ class DinoV2():
         fig = plt.figure(figsize=(20, 10))  
         ax1 = fig.add_subplot(121)
         ax2 = fig.add_subplot(122)
-        ax1.imshow(img1)
-        ax1.axis("off")
-        ax1.set_title("Final submission")
-        ax2.imshow(img2)
+        ax2.imshow(img1)
         ax2.axis("off")
-        ax2.set_title(f"Closest inspiration - {origin}")
+        ax2.set_title("Final submission", fontdict={"fontsize": 18})
+        ax1.imshow(img2)
+        ax1.axis("off")
+        ax1.set_title(f"Closest inspiration - {origin}", fontdict={"fontsize": 18})
 
         if len(selected_matches) != 0:
             # Sort and limit number of lines
@@ -301,11 +301,18 @@ class DinoV2():
                                     axesA=ax2, axesB=ax1, color=color, linewidth=linewidth)
                 ax2.add_artist(con)
 
-        plt.show()
+        plt.tight_layout()
+
+        if save:
+            plt.savefig(f'images/lines.pdf')
+            plt.savefig(f'images/lines.png')
+            plt.savefig(f'images/lines.svg')
+        else:
+            plt.show()
 
 
-    def draw_attention(self, pic1, pic2):
-        for picture in [pic1, pic2]:
+    def draw_attention(self, pic1, pic2, save=False):
+        for idx, picture in enumerate([pic1, pic2]):
             attn_mask, attn_photo = self.return_attention_map(picture, show=False)
             fig = plt.figure(figsize=(20, 10))
                     
@@ -314,16 +321,21 @@ class DinoV2():
             ax3 = fig.add_subplot(133)
             
             ax1.imshow(cv2.cvtColor(cv2.imread(picture, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB))
-            ax1.set_title("Photo")
+            ax1.set_title("Photo", fontdict={"fontsize": 18})
             ax1.axis("off")
                     
             ax2.imshow(attn_mask)
-            ax2.set_title("Attention Mask")
+            ax2.set_title("Attention Mask", fontdict={"fontsize": 18})
             ax2.axis("off")
                     
             ax3.imshow(attn_photo)
-            ax3.set_title("Masked Photo")
+            ax3.set_title("Masked Photo", fontdict={"fontsize": 18})
             ax3.axis("off")
                     
             plt.tight_layout()
-            plt.show()
+            if save:
+                plt.savefig(f'images/{idx}_attention.pdf')
+                plt.savefig(f'images/{idx}_attention.png')
+                plt.savefig(f'images/{idx}_attention.svg')
+            else:
+                plt.show()
