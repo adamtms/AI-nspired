@@ -1,14 +1,6 @@
 import streamlit as st
 
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-import cv2
-import os
-import re
-
-from src.lib.data import load_images, load_images_from_path, read_csv
+from src.lib.data import read_csv
 from src.components.graphs.group_similarity import group_similarity
 from src.components.graphs.groups_similarity import groups_similarity
 from src.components.graphs.image_similarity import image_similarity

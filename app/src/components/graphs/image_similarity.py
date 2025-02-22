@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 import streamlit as st
 import os
-import PIL
 import sys
 
 APP_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))#get dirname of ./app.py
