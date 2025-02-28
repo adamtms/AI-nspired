@@ -31,14 +31,11 @@ def aggregate_data(
     '''
     expert_group = expert_df.groupby("group").agg({expert_feature: expert_aggr_method}).reset_index()
 
-    # Aggregate a given similarity metric per group and per Source (AI vs. WEB).
     sim_group = sim_df.groupby(['Group', 'Source']).agg({similarity_metric: sim_aggr_method}).reset_index()
-
-    # Pivot the similarity data so that each group has a separate column for each Source.
+    
     sim_pivot = sim_group.pivot(index='Group', columns='Source', values=similarity_metric).reset_index()
     sim_pivot.columns.name = None  # Remove pivot index name
 
-    # Merge expert scores (per group) with the similarity scores.
     merged_df = pd.merge(expert_group, sim_pivot, left_on="group", right_on="Group", how="inner")
     merged_df.drop(columns=["Group"], inplace=True)
     return merged_df
@@ -69,7 +66,6 @@ def stats_tests(df: pd.DataFrame, expert_feature: str = 'aesthetics') -> None:
     # One way to test this: compare the aesthetics scores for groups where AI similarity > WEB similarity
     # versus groups where AI similarity is not greater than WEB similarity.
     '''
-    # Create a new column for the difference between AI and WEB similarity.
     df["Similarity_Diff"] = df["AI"] - df["Web"]
 
     # Define groups based on whether AI similarity is greater than WEB.
