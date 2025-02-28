@@ -1,5 +1,5 @@
 import pandas as pd
-from scipy.stats import pearsonr, ttest_ind
+from scipy.stats import spearmanr, ttest_ind
 import matplotlib.pyplot as plt
 
 expert_df = pd.read_csv("csv/expert_scores.csv")
@@ -46,18 +46,18 @@ def correlation_analysis(
         similarity_metric: str = 'Dino_Similarity'
         ) -> None:
     '''
-    Calculate the Pearson correlation between a given expert_feature scores 
+    Calculate the Spearman correlation between a given expert_feature scores 
     and a given similarity_metric for each Source.
     '''
     ai_valid = df.dropna(subset=["AI"])
-    pearson_ai, p_value_ai = pearsonr(ai_valid[expert_feature], ai_valid["AI"])
+    pearson_ai, p_value_ai = spearmanr(ai_valid[expert_feature], ai_valid["AI"])
     print(f"Correlation between {expert_feature} and AI {similarity_metric}:")
-    print(f"Pearson Correlation: {pearson_ai:.3f}, p-value: {p_value_ai:.3f}")
+    print(f"Spearman Correlation: {pearson_ai:.3f}, p-value: {p_value_ai:.3f}")
 
     web_valid = df.dropna(subset=["Web"])
-    pearson_web, p_value_web = pearsonr(web_valid[expert_feature], web_valid["Web"])
+    pearson_web, p_value_web = spearmanr(web_valid[expert_feature], web_valid["Web"])
     print(f"\nCorrelation between {expert_feature} and WEB {similarity_metric}:")
-    print(f"Pearson Correlation: {pearson_web:.3f}, p-value: {p_value_web:.3f}")
+    print(f"Spearman Correlation: {pearson_web:.3f}, p-value: {p_value_web:.3f}")
 
 def stats_tests(df: pd.DataFrame, expert_feature: str = 'aesthetics') -> None:
     '''
