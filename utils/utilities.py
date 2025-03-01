@@ -25,7 +25,7 @@ def get_groups():
     return pd.DataFrame.from_dict(groups, orient='index')
 
 def get_participants():
-    participants = pd.read_excel('./data/Participants.xlsx', header=0, skiprows=[0], index_col=0)
+    participants = pd.read_excel('../data/Participants.xlsx', header=0, skiprows=[0], index_col=0)
     participants.columns = ["Unnamed: 1", "School_group", "ID", "GroupID", "Name", "WEB_inspirations", "AI_inspirations", "Matrices", "Comment"]
     participants["GroupID"] = participants["ID"].apply(lambda x: str(x) if str(x).isdigit() else str(x).rstrip("ABCD"))
     participants["WEB_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", "web"], f'{row["ID"]}'), axis=1)
