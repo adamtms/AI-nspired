@@ -61,12 +61,13 @@ def correlation_analysis(
 
 def stats_tests(df: pd.DataFrame, expert_feature: str = 'aesthetics') -> None:
     '''
-    # Hypothesis example:
-    # "Groups with higher AI-based Dino_Similarity scores have higher aesthetics scores than groups with higher WEB-based scores."
-    # One way to test this: compare the aesthetics scores for groups where AI similarity > WEB similarity
-    # versus groups where AI similarity is not greater than WEB similarity.
+    Hypothesis example:"Groups with higher AI-based Dino_Similarity scores have higher aesthetics scores 
+    than groups with higher WEB-based scores."
+    One way to test this: compare the aesthetics scores for groups where AI similarity > WEB similarity
+    versus groups where AI similarity is not greater than WEB similarity.
     '''
     df["Similarity_Diff"] = df["AI"] - df["Web"]
+    print(f'\nNumber of groups with overall higher web similarity:\n{df[df["Similarity_Diff"] <= 0].count()}')
 
     # Define groups based on whether AI similarity is greater than WEB.
     group_ai_better = df[df["Similarity_Diff"] > 0][expert_feature]
