@@ -15,7 +15,7 @@ class ComparisonModule:
 def generate_csv(
     csv_path: str,
     modules: list[ComparisonModule],
-    data_path: str = "data/clean",
+    data_path: str = "data",
     verbose: bool = False,
     min_max_similarities=False,
 ) -> None:

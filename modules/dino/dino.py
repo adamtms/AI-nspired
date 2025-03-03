@@ -15,7 +15,9 @@ import torchvision.transforms as transforms
 
 from dinov2.models.vision_transformer import vit_base
 
-class DinoV2():
+from common import ComparisonModule
+
+class DinoV2(ComparisonModule):
     
     def __init__(self, 
                 checkpoint: str ='dinov2_vitb14_reg4_pretrain.pth', 
@@ -25,6 +27,7 @@ class DinoV2():
                 smaller_edge_size: int = 448, 
                 device='cuda' if torch.cuda.is_available() else 'cpu'
                 ):
+        super().__init__("Dino")
         self.model = vit_base(
             patch_size=patch_size,
             img_size=img_size,
@@ -106,10 +109,10 @@ class DinoV2():
 
             return pooled_features
 
-    def calculate_similarity(self, image1: str, image2: str):
+    def calculate_similarity(self, image1, image2):
         with torch.inference_mode():
-            features1 = self.extract_features(cv2.cvtColor(cv2.imread(image1, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB))
-            features2 = self.extract_features(cv2.cvtColor(cv2.imread(image2, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB))
+            features1 = self.extract_features(cv2.cvtColor(image1, cv2.COLOR_BGR2RGB))
+            features2 = self.extract_features(cv2.cvtColor(image2, cv2.COLOR_BGR2RGB))
 
             similarity = F.cosine_similarity(features1, features2, dim=0)
             del features1, features2
