@@ -22,7 +22,8 @@ def generate_csv(
     """
     Generates a csv file with similarity between every final and inspiration image for all groups
     """
-    groups = sorted(os.listdir(data_path))
+    groups = sorted(d for d in os.listdir(data_path) if d.isnumeric())
+    print(groups)
     final_df = pd.DataFrame(
         columns=["Final_Submission", "Inspiration"]
         + [f"{x.name}_Similarity" for x in modules]
@@ -58,7 +59,7 @@ def generate_csv(
 
                 group_dict["Final_Submission"].append(f_name)
                 group_dict["Inspiration"].append(w_name)
-                group_dict["Source"].append("web")
+                group_dict["Source"].append("Web")
                 for x in modules:
                     group_dict[f"{x.name}_Similarity"].append(
                         x.calculate_similarity(f_cv2, w_cv2)
@@ -73,7 +74,7 @@ def generate_csv(
 
                 group_dict["Final_Submission"].append(f_name)
                 group_dict["Inspiration"].append(a_name)
-                group_dict["Source"].append("ai")
+                group_dict["Source"].append("AI")
                 for x in modules:
                     group_dict[f"{x.name}_Similarity"].append(
                         x.calculate_similarity(f_cv2, a_cv2)
