@@ -1,6 +1,7 @@
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.jfif
-__pycache__/
+*__pycache__*
+data
+*.pth
+images
+.DS_Store
+static
+old_data
