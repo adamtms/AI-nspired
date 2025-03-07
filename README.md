@@ -65,4 +65,8 @@ For each project, the top-ranked inspiration from both sources was selected, and
 
 1. Store your dataset in the data directory, following the format outlined in `scripts/dataset_transformer.py`. If needed, run the script to automatically restructure your current file hierarchy into the expected format
 2. Execute `csv_generation_script.py` to calculate similarity scores and generate the CSV file containing the computed values
-3. Visualize and analyze the computed similarity scores using `notebooks/group_scores.ipynb`
+3. Visualize and analyze the computed similarity scores using `notebooks/group_scores.ipynb`  
+
+Remarks:
+- To run the Streamlit app, ensure that all image files are downloaded and placed inside the static directory.
+- Before running any notebooks, set Jupyter: Notebook File Root to `${workspaceFolder}` to ensure proper file path resolution.
