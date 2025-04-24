@@ -44,27 +44,37 @@ def correlation_analysis(
         df: pd.DataFrame, 
         expert_feature: str = 'aesthetics',
         similarity_metric: str = 'Dino_Similarity',
+        exp_aggr_method: str = 'mean',
+        sim_aggr_method: str = 'mean',
         p_threshold: float = 0.05
-        ) -> None:
+        ) -> pd.DataFrame:
     '''
     Calculate the Spearman correlation between a given expert_feature score 
-    and a given similarity_metric for each Source, printing only statistically significant results.
+    and a given similarity_metric for each Source, returning results as a DataFrame.
     '''
-    ai_valid = df.dropna(subset=["AI"])
-    spearman_ai, p_value_ai = spearmanr(ai_valid[expert_feature], ai_valid["AI"])
-    if p_value_ai < p_threshold:
-        print(f"Significant correlation between {expert_feature} and AI {similarity_metric}:")
-        print(f"Spearman Correlation: {spearman_ai:.3f}, p-value: {p_value_ai:.3f}")
-    web_valid = df.dropna(subset=["Web"])
-    spearman_web, p_value_web = spearmanr(web_valid[expert_feature], web_valid["Web"])
-    if p_value_web < p_threshold:
-        print(f"Significant correlation between {expert_feature} and WEB {similarity_metric}:")
-        print(f"Spearman Correlation: {spearman_web:.3f}, p-value: {p_value_web:.3f}")
+    results = []
+    for source in ["AI", "Web"]:
+        valid = df.dropna(subset=[source])
+        corr, p_value = spearmanr(
+            valid[expert_feature], 
+            valid[source],
+        )
+        if p_value < p_threshold:
+            results.append({
+                "Source": source.upper(),
+                "Similarity Metric": f'{similarity_metric}_{sim_aggr_method}',
+                "Expert Rating": f"{expert_feature}_{exp_aggr_method}",
+                "Correlation": corr,
+                "P-value": p_value
+            })
+    return pd.DataFrame(results)
 
 def stats_tests(
         df: pd.DataFrame, 
         expert_feature: str = 'aesthetics',
-        p_threshold: float = 0.05
+        p_threshold: float = 0.05,
+        sim_metric: str = 'Dino_Similarity',
+        sim_aggr_method: str = 'mean'
         ) -> None:
     '''
     Perform a Welch’s t-test comparing expert scores between groups with higher AI-based similarity and groups with higher WEB-based similarity.
@@ -72,13 +82,14 @@ def stats_tests(
     '''
     df["Similarity_Diff"] = df["AI"] - df["Web"]
 
-    print(f'\nNumber of groups with overall higher web similarity:\n{df[df["Similarity_Diff"] <= 0].count()}')
+    #print(f'\nNumber of groups with overall higher web similarity:\n{df[df["Similarity_Diff"] <= 0].count()}')
     
     group_ai_better = df[df["Similarity_Diff"] > 0][expert_feature]
     group_web_better = df[df["Similarity_Diff"] <= 0][expert_feature]
     t_stat, t_p_value = ttest_ind(group_ai_better, group_web_better, equal_var=False)
     if t_p_value < p_threshold:
-        print(f"\nSignificant T-test comparing {expert_feature} scores between groups with AI > Web and groups with AI <= Web:")
+        print(f'{sim_metric} {sim_aggr_method} - {expert_feature}')
+        print(f"Significant T-test comparing {expert_feature} scores between groups with AI > Web and groups with AI <= Web:")
         print(f"T-statistic: {t_stat:.3f}, p-value: {t_p_value:.3f}")
 
 def visualize(
@@ -103,28 +114,46 @@ def visualize(
     plt.show()
 
 
-p_threshold = 0.1
+p_threshold = 0.05
+all_corr_results = []
 
 for score_col in score_cols:
     for sim_col in similarity_cols:
         for exp_aggr_method in ['mean']:
             #print(f"\n======\nExpert data aggregation method: {exp_aggr_method}")
-            for sim_aggr_method in ['mean', 'median', 'max']:
-                print(f"\n===\nSimilarity data aggregation method: {sim_aggr_method}")
-                print(f"\nAnalyzing {score_col} and {sim_col}...\n")
-                df = aggregate_data(expert_df_clean, 
-                                    sim_df_clean, 
-                                    expert_feature=score_col, 
-                                    similarity_metric=sim_col, 
-                                    expert_aggr_method=exp_aggr_method,
-                                    sim_aggr_method=sim_aggr_method) 
-                correlation_analysis(df, 
-                                     expert_feature=score_col, 
-                                     similarity_metric=sim_col, 
-                                     p_threshold=p_threshold)
-                stats_tests(df, expert_feature=score_col, p_threshold=p_threshold)
+            for sim_aggr_method in ['mean']: # max median
+                #print(f"\n===\nSimilarity data aggregation method: {sim_aggr_method}")
+                #print(f"\nAnalyzing {score_col} and {sim_col}...\n")
+                df = aggregate_data(
+                    expert_df_clean, 
+                    sim_df_clean, 
+                    expert_feature=score_col, 
+                    similarity_metric=sim_col, 
+                    expert_aggr_method=exp_aggr_method,
+                    sim_aggr_method=sim_aggr_method
+                ) 
+                corr_df = correlation_analysis(
+                    df, 
+                    expert_feature=score_col, 
+                    similarity_metric=sim_col, 
+                    exp_aggr_method=exp_aggr_method,
+                    sim_aggr_method=sim_aggr_method,
+                    p_threshold=p_threshold
+                )
+                stats_tests(
+                    df, 
+                    expert_feature=score_col, 
+                    p_threshold=p_threshold,
+                    sim_metric=sim_col,
+                    sim_aggr_method=sim_aggr_method
+                )
+                all_corr_results.append(corr_df)
                 '''visualize(df, 
                           expert_feature=score_col, 
                           similarity_metric=sim_col,
                           sim_aggr_method=sim_aggr_method,
                           exp_aggr_method=exp_aggr_method)'''
+
+
+correlation_results_df = pd.concat(all_corr_results, ignore_index=True)
+print(correlation_results_df)
