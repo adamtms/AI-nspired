@@ -12,7 +12,6 @@ Software for analysis of images for elements of inspiration coinciding with elem
 - [Project Overview](#project-overview)
 - [Dataset](#dataset)
 - [Methodology](#methodology)
-- [Results](#results)
 - [Content of the Repository](#content-of-the-repository)
 - [How to Use](#how-to-use)
 
