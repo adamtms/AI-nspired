@@ -40,19 +40,6 @@ The experiments were conducted on data collected from projects developed for the
 
 To quantify the influence of inspirations, computational similarity scores were calculated between the final project images and the gathered inspirations. The analysis employed both classical image comparison methods (color and contrast similarity) and deep learning embeddings using **ResNet50** and **DINOv2** models. The computational results were then compared with participants' declared inspirations and evaluated against expert rankings.
 
-## Results
-
-For each project, the top-ranked inspiration from both sources was selected, and the similarity scores were statistically compared using the Mann-Whitney U test.  The statistical significance of the observed differences was evaluated at α = 0.05.
-
-![Plot Results](https://github.com/user-attachments/assets/a4a2ca1f-1215-4a7f-b445-3f29cb821f88)
-
-| Metric               | p-value   | Interpretation                              |
-|---------------------|-----------|---------------------------------------------|
-| Color Similarity    | 3.99e-20 | Web inspirations show significantly higher color similarity |
-| Contrast Similarity | 0.475     | No significant difference                   |
-| ResNet Embedding    | 4.68e-04 | Web inspirations show significantly higher semantic similarity (ResNet) |
-| DINO Embedding      | 9.37e-04 | AI inspirations show significantly higher semantic similarity (DINO) |
-
 ## Content of the Repository
 
 - `app` directory: Contains the Streamlit app code for visualizing computed similarity scores for each group.
