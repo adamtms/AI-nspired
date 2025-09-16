@@ -9,21 +9,11 @@ Software for analysis of images for elements of inspiration coinciding with elem
 
 ## Table of content
 
-- [Authors](#authors)
 - [Project Overview](#project-overview)
 - [Dataset](#dataset)
 - [Methodology](#methodology)
-- [Results](#results)
 - [Content of the Repository](#content-of-the-repository)
 - [How to Use](#how-to-use)
-
-## Authors
-
-- [Adam Tomys](https://github.com/adamtms)
-- [Marcel Rojewski](https://github.com/marcelrojo)
-- [Marcin Kapiszewski](https://github.com/Marcin59)
-- [Jakub Jagła](https://github.com/j-millet)
-- [Łukasz Borak](https://github.com/B0cz3k)
 
 ## Project Overview
 
@@ -35,6 +25,8 @@ The experiments were conducted on data collected from projects developed for the
 - 474 web inspirations
 - 417 AI inspirations
 - 159 final project images
+
+The repository also contains the [list of prompts](csv/matched_used_participant_images_with_prompts.csv) used to generate AI images, including [prompts of images selected as most inspirational](csv/matched_used_participant_images_with_prompts.csv).
 
 ## Methodology
 

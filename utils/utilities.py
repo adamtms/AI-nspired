@@ -16,7 +16,7 @@ def get_groups():
     for _, row in participants.iterrows():
         group_code = int(row['GroupID'])
         groups[group_code]['group_code'] = group_code
-        groups[group_code]['people_ID'].append(row['ID'])
+        groups[group_code]['people_ID'].append(row['ParticipantID'])
         groups[group_code]['ai_images'].extend(row['AI_inspirations'])
         groups[group_code]['web_images'].extend(row['WEB_inspirations'])
         groups[group_code]['final_submissions'] = list(set(groups[group_code]['final_submissions']) | set(row['Final_submissions']))
@@ -24,18 +24,18 @@ def get_groups():
     return pd.DataFrame.from_dict(groups, orient='index')
 
 def get_participants():
-    participants = pd.read_excel('data/Participants.xlsx', header=0, skiprows=[0], index_col=0)
-    participants.columns = ["Unnamed: 1", "School_group", "ID", "GroupID", "Name", "WEB_inspirations", "AI_inspirations", "Matrices", "Comment"]
+    participants = pd.read_csv('data/Participants_PL_EN.csv')
+    participants.columns = ["[PL] KOD", "ParticipantID","[PL] Inspiracje WEB","WEB_inspirations","[PL] Inspiracje AI","AI_inspirations","[PL] Matryce","Matrices"]
     
     # Ensure GroupID is properly extracted
-    participants["GroupID"] = participants["ID"].apply(lambda x: str(x) if str(x).isdigit() else str(x).rstrip("ABCD"))
+    participants["GroupID"] = participants["ParticipantID"].apply(lambda x: str(x) if str(x).isdigit() else str(x).rstrip("ABCD"))
     
     # Adapt paths to new structure: data/[group_folder]/[ai, web, final]/
-    participants["WEB_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", row["GroupID"], "web"], f'{row["ID"]}'), axis=1)
-    participants["AI_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", row["GroupID"], "ai"], f'{row["ID"]}'), axis=1)
+    participants["WEB_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", row["GroupID"], "web"], f'{row["ParticipantID"]}'), axis=1)
+    participants["AI_inspirations"] = participants.apply(lambda row: list_files_with_prefix(["data", row["GroupID"], "ai"], f'{row["ParticipantID"]}'), axis=1)
     participants["Final_submissions"] = participants.apply(lambda row: list_files_with_prefix(["data", row["GroupID"], "final"], ''), axis=1)
 
-    return participants[["Name", "ID", "GroupID", "WEB_inspirations", "AI_inspirations", "Final_submissions", "Matrices", "Comment"]]
+    return participants[["ParticipantID", "GroupID", "WEB_inspirations", "AI_inspirations", "Final_submissions", "Matrices"]]
 
 def list_files_with_prefix(directory, prefix):
     try:
