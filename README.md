@@ -26,6 +26,8 @@ The experiments were conducted on data collected from projects developed for the
 - 417 AI inspirations
 - 159 final project images
 
+The repository also contains the [list of prompts](csv/matched_used_participant_images_with_prompts.csv) used to generate AI images, including [prompts of images selected as most inspirational](csv/matched_used_participant_images_with_prompts.csv).
+
 ## Methodology
 
 To quantify the influence of inspirations, computational similarity scores were calculated between the final project images and the gathered inspirations. The analysis employed both classical image comparison methods (color and contrast similarity) and deep learning embeddings using **ResNet50** and **DINOv2** models. The computational results were then compared with participants' declared inspirations and evaluated against expert rankings.
